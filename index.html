@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changi Airport Traffic Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+    <style>
+        :root {
+            --bg: #f5f5f3;
+            --card: #ffffff;
+            --text: #222222;
+            --muted: #666666;
+            --border: #e0ddd8;
+            --accent: #EF492F;
+            --green: #2a7d4f;
+            --red: #c93a2a;
+            --orange: #EF492F;
+            --purple: #7c3aed;
+            --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+            --shadow-lg: 0 4px 12px rgba(0,0,0,.08);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
+
+        .dashboard { max-width:1400px; margin:0 auto; padding:24px; }
+
+        header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; margin-bottom:24px; }
+        header .title-block h1 { font-size:1.75rem; font-weight:700; letter-spacing:-.02em; display:flex; align-items:center; gap:10px; }
+        header .title-block h1 .title-bar { width:3px; height:1.4em; background:linear-gradient(180deg,#EF492F,#D4881C); border-radius:2px; flex-shrink:0; }
+        header .title-block p { color:var(--muted); font-size:1.05rem; margin-top:4px; letter-spacing:.01em; padding-left:13px; }
+        .filters { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+        .filters label { font-size:.75rem; color:var(--muted); font-weight:500; margin-right:6px; text-transform:uppercase; letter-spacing:.05em; }
+        .year-btn { padding:6px 16px; border-radius:20px; border:none; background:transparent; cursor:pointer; font-size:.8rem; font-weight:500; transition:all .2s; color:var(--muted); position:relative; }
+        .year-btn::before { content:''; position:absolute; inset:0; border-radius:20px; border:1.5px solid transparent; transition:all .2s; }
+        .year-btn:hover { color:var(--text); }
+        .year-btn:hover::before { border-color:var(--border); }
+        .year-btn.active { color:#fff; font-weight:600; }
+        .year-btn.active::before { border-color:transparent; }
+        .year-btn[data-year="2019"].active { background:#888888; }
+        .year-btn[data-year="2022"].active { background:#EF492F; }
+        .year-btn[data-year="2023"].active { background:#D4881C; }
+        .year-btn[data-year="2024"].active { background:#2a7d4f; }
+        .year-btn[data-year="2025"].active { background:#7c3aed; }
+        .year-btn[data-year="2026"].active { background:#222222; }
+
+        .kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; margin-bottom:28px; }
+        .kpi { background:var(--card); border-radius:12px; padding:0; box-shadow:var(--shadow); overflow:hidden; position:relative; transition:box-shadow .2s, transform .2s; }
+        .kpi:hover { box-shadow:var(--shadow-lg); transform:translateY(-2px); }
+        .kpi .kpi-accent { height:4px; width:100%; }
+        .kpi .kpi-body { padding:20px 24px; }
+        .kpi .kpi-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+        .kpi .label { line-height:1.4; }
+        .kpi .label .metric-name { font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text); font-weight:700; }
+        .kpi .label .metric-period { font-size:.75rem; letter-spacing:.04em; color:var(--text); font-weight:700; text-transform:uppercase; margin-top:3px; }
+        .kpi .kpi-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; margin-left:8px; }
+        .kpi .value { font-size:2rem; font-weight:800; margin:2px 0 10px; letter-spacing:-.03em; }
+        .kpi .kpi-footer { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+        .kpi .change { font-size:.78rem; font-weight:600; display:inline-flex; align-items:center; gap:3px; padding:4px 10px; border-radius:20px; }
+        .kpi .change.up { color:#166534; background:rgba(22,101,52,.08); }
+        .kpi .change.down { color:#991b1b; background:rgba(153,27,27,.08); }
+        .kpi .change .arrow { font-size:.6rem; }
+        .kpi .change .chg-label { font-weight:400; opacity:.7; margin-left:2px; }
+        .kpi .kpi-comps { margin-top:12px; border-top:1px solid var(--border); padding-top:10px; display:flex; flex-direction:column; gap:6px; }
+        .kpi .comp-row { display:flex; justify-content:space-between; align-items:center; font-size:.78rem; }
+        .kpi .comp-row .comp-label { color:var(--muted); font-weight:500; }
+        .kpi .comp-row .comp-value { font-weight:600; font-variant-numeric:tabular-nums; }
+
+        .charts { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+        .chart-card { background:var(--card); border-radius:12px; padding:20px 24px; box-shadow:var(--shadow); }
+        .chart-card h2 { font-size:1rem; font-weight:600; margin-bottom:16px; }
+        .chart-card canvas { width:100%!important; }
+
+        .tables { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+        .table-card { background:var(--card); border-radius:12px; padding:20px 24px; box-shadow:var(--shadow); overflow-x:auto; }
+        .table-card h2 { font-size:1rem; font-weight:600; margin-bottom:12px; }
+        table { width:100%; border-collapse:collapse; font-size:.8rem; }
+        th { text-align:left; padding:8px 10px; border-bottom:2px solid var(--border); font-weight:600; color:var(--muted); font-size:.7rem; text-transform:uppercase; letter-spacing:.04em; cursor:pointer; white-space:nowrap; user-select:none; transition:color .15s; }
+        th:hover { color:var(--accent); }
+        th .sort-arrow { font-size:.55rem; margin-left:3px; opacity:.4; transition:opacity .15s; }
+        th.sorted .sort-arrow { opacity:1; color:var(--accent); }
+        td { padding:7px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
+        tr:last-child td { border-bottom:none; font-weight:700; background:#f5f4f1; }
+        td.num { text-align:right; font-variant-numeric:tabular-nums; }
+        td.peak { background:rgba(42,125,79,.08); font-weight:600; }
+        .recovery-cell { font-weight:600; }
+        .recovery-cell.above { color:#2a7d4f; }
+        .recovery-cell.below { color:#c93a2a; }
+
+        .footer { text-align:center; padding:16px; color:var(--muted); font-size:.75rem; }
+
+        @media(max-width:900px) {
+            .charts, .tables { grid-template-columns:1fr; }
+        }
+        @media(max-width:600px) {
+            .kpis { grid-template-columns:1fr 1fr; }
+            header { flex-direction:column; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <header>
+        <div class="title-block">
+            <h1><span class="title-bar"></span>Changi Airport Traffic Statistics</h1>
+            <p>Monthly passenger traffic &amp; aircraft movements</p>
+        </div>
+        <div class="filters">
+            <label>Show years:</label>
+            <button class="year-btn active" data-year="2019">2019</button>
+            <button class="year-btn" data-year="2022">2022</button>
+            <button class="year-btn" data-year="2023">2023</button>
+            <button class="year-btn" data-year="2024">2024</button>
+            <button class="year-btn active" data-year="2025">2025</button>
+            <button class="year-btn active" data-year="2026">2026</button>
+        </div>
+    </header>
+
+    <section class="kpis" id="kpis"></section>
+
+    <section class="charts">
+        <div class="chart-card">
+            <h2>Passenger Traffic</h2>
+            <canvas id="paxChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Aircraft Movements</h2>
+            <canvas id="acftChart"></canvas>
+        </div>
+    </section>
+
+    <section class="charts" style="margin-bottom:24px;">
+        <div class="chart-card">
+            <h2>Passenger Recovery vs 2019 (%)</h2>
+            <canvas id="paxRecoveryChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Aircraft Recovery vs 2019 (%)</h2>
+            <canvas id="acftRecoveryChart"></canvas>
+        </div>
+    </section>
+
+    <section class="charts" style="margin-bottom:24px;">
+        <div class="chart-card">
+            <h2>Annual Passenger Traffic</h2>
+            <canvas id="paxAnnualChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2>Annual Aircraft Movements</h2>
+            <canvas id="acftAnnualChart"></canvas>
+        </div>
+    </section>
+
+    <section class="tables">
+        <div class="table-card">
+            <h2>Passenger Traffic</h2>
+            <table id="paxTable"></table>
+        </div>
+        <div class="table-card">
+            <h2>Aircraft Movements</h2>
+            <table id="acftTable"></table>
+        </div>
+    </section>
+
+    <div class="footer">
+        Data source: Changi Airport Group &middot; Last updated: <span id="lastUpdated"></span>
+    </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const YEARS = [2019, 2022, 2023, 2024, 2025, 2026];
+
+const PAX = {
+    2019: [5660000,5130000,5630000,5580000,5407000,5820000,5910000,5900000,5470000,5650000,5720000,6410000],
+    2022: [720000,703000,1140000,1930000,2470000,2930000,3300000,3320000,3420000,3690000,3960000,4620000],
+    2023: [4370000,4003000,4634000,4603000,4840000,5120000,5270000,5150000,4870000,5120000,5150000,5810000],
+    2024: [5430000,5350000,5730000,5400000,5480000,5620000,5700000,5730000,5400000,5650000,5740000,6410000],
+    2025: [6160000,5440000,5620000,5780000,5820000,5880000,5970000,5910000,5470000,5840000,5750000,6340000],
+    2026: [5970000]
+};
+
+const ACFT = {
+    2019: [32700,30000,32400,31500,31700,31400,32400,32400,31200,32000,31600,33300],
+    2022: [12100,10900,13200,15100,17100,18400,20300,20400,20400,21800,23700,25400],
+    2023: [25200,22900,26100,26300,27600,27500,28900,29000,27800,28700,28000,30400],
+    2024: [30100,28800,30400,29100,30100,30000,31000,31200,30000,31300,30100,33200],
+    2025: [33100,29200,31600,31000,31700,31000,31300,30800,29500,31200,30600,32900],
+    2026: [32700]
+};
+
+// ── HELPERS ──────────────────────────────────────────
+const fmt = n => n.toLocaleString('en-US');
+const fmtM = n => (n/1e6).toFixed(2) + 'M';
+const fmtK = n => (n/1e3).toFixed(1) + 'K';
+const pct = (v, base) => ((v / base) * 100).toFixed(1);
+const sign = v => v > 0 ? '+' : '';
+
+const YEAR_COLORS = {
+    2019: {line:'#888888', bg:'rgba(136,136,136,.08)'},
+    2022: {line:'#EF492F', bg:'rgba(239,73,47,.08)'},
+    2023: {line:'#D4881C', bg:'rgba(212,136,28,.08)'},
+    2024: {line:'#2a7d4f', bg:'rgba(42,125,79,.08)'},
+    2025: {line:'#7c3aed', bg:'rgba(124,58,237,.08)'},
+    2026: {line:'#222222', bg:'rgba(34,34,34,.10)'}
+};
+
+let activeYears = new Set([2019, 2025, 2026]);
+
+// ── KPIs ─────────────────────────────────────────────
+function renderKPIs() {
+    const latest2026Pax = PAX[2026];
+    const latest2026Acft = ACFT[2026];
+    const latestMonthIdx = latest2026Pax.length - 1;
+    const monthName = MONTHS[latestMonthIdx];
+    const ytdRange = latestMonthIdx === 0 ? `${monthName} 2026` : `${MONTHS[0]} – ${monthName} 2026`;
+
+    const curPax = latest2026Pax[latestMonthIdx];
+    const prevPax = PAX[2025][latestMonthIdx];
+    const basePax = PAX[2019][latestMonthIdx];
+    const paxYoY = ((curPax - prevPax) / prevPax * 100).toFixed(1);
+    const paxRec = pct(curPax, basePax);
+
+    const curAcft = latest2026Acft[latestMonthIdx];
+    const prevAcft = ACFT[2025][latestMonthIdx];
+    const baseAcft = ACFT[2019][latestMonthIdx];
+    const acftYoY = ((curAcft - prevAcft) / prevAcft * 100).toFixed(1);
+    const acftRec = pct(curAcft, baseAcft);
+
+    // YTD totals
+    const ytdPax = latest2026Pax.reduce((a,b)=>a+b,0);
+    const ytdPaxPrev = PAX[2025].slice(0, latest2026Pax.length).reduce((a,b)=>a+b,0);
+    const ytdPaxChg = ((ytdPax - ytdPaxPrev) / ytdPaxPrev * 100).toFixed(1);
+
+    const ytdPaxBase = PAX[2019].slice(0, latest2026Pax.length).reduce((a,b)=>a+b,0);
+    const ytdPaxRec = pct(ytdPax, ytdPaxBase);
+
+    const ytdAcft = latest2026Acft.reduce((a,b)=>a+b,0);
+    const ytdAcftPrev = ACFT[2025].slice(0, latest2026Acft.length).reduce((a,b)=>a+b,0);
+    const ytdAcftChg = ((ytdAcft - ytdAcftPrev) / ytdAcftPrev * 100).toFixed(1);
+    const ytdAcftBase = ACFT[2019].slice(0, latest2026Acft.length).reduce((a,b)=>a+b,0);
+    const ytdAcftRec = pct(ytdAcft, ytdAcftBase);
+
+    const monthShort = MONTHS[latestMonthIdx].slice(0, 3);
+
+    const upArrow = '<span class="arrow">&#9650;</span>';
+    const downArrow = '<span class="arrow">&#9660;</span>';
+    const personIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="4"/><path d="M12 13c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"/></svg>';
+    const planeIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>';
+
+    document.getElementById('kpis').innerHTML = `
+        <div class="kpi">
+            <div class="kpi-accent" style="background:linear-gradient(90deg,#EF492F,#D4881C)"></div>
+            <div class="kpi-body">
+                <div class="kpi-header">
+                    <div class="label"><div class="metric-name">Passenger Traffic</div><div class="metric-period">${monthName} 2026</div></div>
+                    <div class="kpi-icon" style="background:rgba(239,73,47,.08);color:#EF492F">${personIcon}</div>
+                </div>
+                <div class="value">${fmtM(curPax)}</div>
+                <div class="kpi-footer">
+                    <div class="change ${paxYoY >= 0 ? 'up':'down'}">${paxYoY >= 0 ? upArrow : downArrow} ${sign(paxYoY)}${paxYoY}%<span class="chg-label">vs ${monthShort} 2025</span></div>
+                    <div class="change ${paxRec >= 100 ? 'up':'down'}">${paxRec >= 100 ? upArrow : downArrow} ${paxRec}%<span class="chg-label">vs ${monthShort} 2019</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-accent" style="background:linear-gradient(90deg,#222222,#666666)"></div>
+            <div class="kpi-body">
+                <div class="kpi-header">
+                    <div class="label"><div class="metric-name">Aircraft Movements</div><div class="metric-period">${monthName} 2026</div></div>
+                    <div class="kpi-icon" style="background:rgba(34,34,34,.06);color:#222">${planeIcon}</div>
+                </div>
+                <div class="value">${fmtK(curAcft)}</div>
+                <div class="kpi-footer">
+                    <div class="change ${acftYoY >= 0 ? 'up':'down'}">${acftYoY >= 0 ? upArrow : downArrow} ${sign(acftYoY)}${acftYoY}%<span class="chg-label">vs ${monthShort} 2025</span></div>
+                    <div class="change ${acftRec >= 100 ? 'up':'down'}">${acftRec >= 100 ? upArrow : downArrow} ${acftRec}%<span class="chg-label">vs ${monthShort} 2019</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-accent" style="background:linear-gradient(90deg,#2a7d4f,#4ade80)"></div>
+            <div class="kpi-body">
+                <div class="kpi-header">
+                    <div class="label"><div class="metric-name">Passenger Traffic</div><div class="metric-period">Year to Date</div></div>
+                    <div class="kpi-icon" style="background:rgba(42,125,79,.08);color:#2a7d4f">${personIcon}</div>
+                </div>
+                <div class="value">${fmtM(ytdPax)}</div>
+                <div class="kpi-footer">
+                    <div class="change ${ytdPaxChg >= 0 ? 'up':'down'}">${ytdPaxChg >= 0 ? upArrow : downArrow} ${sign(ytdPaxChg)}${ytdPaxChg}%<span class="chg-label">vs YTD 2025</span></div>
+                    <div class="change ${ytdPaxRec >= 100 ? 'up':'down'}">${ytdPaxRec >= 100 ? upArrow : downArrow} ${ytdPaxRec}%<span class="chg-label">vs YTD 2019</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-accent" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div>
+            <div class="kpi-body">
+                <div class="kpi-header">
+                    <div class="label"><div class="metric-name">Aircraft Movements</div><div class="metric-period">Year to Date</div></div>
+                    <div class="kpi-icon" style="background:rgba(124,58,237,.08);color:#7c3aed">${planeIcon}</div>
+                </div>
+                <div class="value">${fmtK(ytdAcft)}</div>
+                <div class="kpi-footer">
+                    <div class="change ${ytdAcftChg >= 0 ? 'up':'down'}">${ytdAcftChg >= 0 ? upArrow : downArrow} ${sign(ytdAcftChg)}${ytdAcftChg}%<span class="chg-label">vs YTD 2025</span></div>
+                    <div class="change ${ytdAcftRec >= 100 ? 'up':'down'}">${ytdAcftRec >= 100 ? upArrow : downArrow} ${ytdAcftRec}%<span class="chg-label">vs YTD 2019</span></div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// ── CHARTS ───────────────────────────────────────────
+let paxChart, acftChart, paxRecChart, acftRecChart, paxAnnualChart, acftAnnualChart;
+
+function makeDatasets(dataObj, type) {
+    return YEARS.filter(y => activeYears.has(y)).map(y => {
+        const d = dataObj[y] || [];
+        return {
+            label: String(y),
+            data: d,
+            borderColor: YEAR_COLORS[y].line,
+            backgroundColor: YEAR_COLORS[y].bg,
+            borderWidth: y === 2026 ? 3 : 2,
+            pointRadius: y === 2026 ? 4 : 2.5,
+            pointHoverRadius: 6,
+            tension: 0.3,
+            fill: false
+        };
+    });
+}
+
+function makeRecoveryDatasets(dataObj) {
+    const base = dataObj[2019];
+    return YEARS.filter(y => y !== 2019 && activeYears.has(y)).map(y => {
+        const d = (dataObj[y] || []).map((v, i) => base[i] ? +(v / base[i] * 100).toFixed(1) : null);
+        return {
+            label: String(y),
+            data: d,
+            borderColor: YEAR_COLORS[y].line,
+            backgroundColor: YEAR_COLORS[y].bg,
+            borderWidth: y === 2026 ? 3 : 2,
+            pointRadius: y === 2026 ? 4 : 2.5,
+            pointHoverRadius: 6,
+            tension: 0.3,
+            fill: false
+        };
+    });
+}
+
+const chartOpts = (isCurrency, unit) => ({
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { size: 12 } } },
+        tooltip: {
+            backgroundColor: '#222222',
+            titleFont: { size: 13 },
+            bodyFont: { size: 12 },
+            padding: 12,
+            cornerRadius: 8,
+            callbacks: {
+                label: ctx => {
+                    const v = ctx.raw;
+                    if (v == null) return '';
+                    if (unit === '%') return `${ctx.dataset.label}: ${v}%`;
+                    return `${ctx.dataset.label}: ${fmt(v)}`;
+                }
+            }
+        }
+    },
+    scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: {
+            grid: { color: '#eae8e4' },
+            ticks: {
+                font: { size: 11 },
+                maxTicksLimit: 6,
+                callback: v => {
+                    if (unit === '%') return v + '%';
+                    if (v >= 1e6) { const m = v/1e6; return (m % 1 === 0) ? m.toFixed(0)+'M' : m.toFixed(1)+'M'; }
+                    if (v >= 1e3) { const k = v/1e3; return (k % 1 === 0) ? k.toFixed(0)+'K' : k.toFixed(1)+'K'; }
+                    return v;
+                }
+            }
+        }
+    }
+});
+
+function recoveryChartOpts() {
+    const opts = chartOpts(false, '%');
+    opts.scales.y.min = 0;
+    opts.plugins.annotation = {
+        annotations: {
+            recoveryLine: {
+                type: 'line',
+                yMin: 100,
+                yMax: 100,
+                borderColor: 'rgba(42,125,79,.4)',
+                borderWidth: 1.5,
+                borderDash: [6, 4],
+                label: {
+                    display: false
+                }
+            },
+            aboveZone: {
+                type: 'box',
+                yMin: 100,
+                backgroundColor: 'rgba(42,125,79,.03)',
+                borderWidth: 0
+            },
+            belowZone: {
+                type: 'box',
+                yMax: 100,
+                yMin: 0,
+                backgroundColor: 'rgba(201,58,42,.02)',
+                borderWidth: 0
+            }
+        }
+    };
+    return opts;
+}
+
+function buildCharts() {
+    const labels = MONTHS.map(m => m.slice(0,3));
+
+    if (paxChart) paxChart.destroy();
+    if (acftChart) acftChart.destroy();
+    if (paxRecChart) paxRecChart.destroy();
+    if (acftRecChart) acftRecChart.destroy();
+
+    paxChart = new Chart(document.getElementById('paxChart'), {
+        type: 'line',
+        data: { labels, datasets: makeDatasets(PAX) },
+        options: chartOpts(false, 'num')
+    });
+
+    acftChart = new Chart(document.getElementById('acftChart'), {
+        type: 'line',
+        data: { labels, datasets: makeDatasets(ACFT) },
+        options: chartOpts(false, 'num')
+    });
+
+    const recOpts = recoveryChartOpts();
+    paxRecChart = new Chart(document.getElementById('paxRecoveryChart'), {
+        type: 'line',
+        data: { labels, datasets: makeRecoveryDatasets(PAX) },
+        options: recOpts
+    });
+
+    acftRecChart = new Chart(document.getElementById('acftRecoveryChart'), {
+        type: 'line',
+        data: { labels, datasets: makeRecoveryDatasets(ACFT) },
+        options: recoveryChartOpts()
+    });
+
+    // Annual bar charts
+    if (paxAnnualChart) paxAnnualChart.destroy();
+    if (acftAnnualChart) acftAnnualChart.destroy();
+
+    const visibleYears = YEARS.filter(y => activeYears.has(y));
+    const annualLabels = visibleYears.map(String);
+
+    function annualTotals(dataObj) {
+        return visibleYears.map(y => {
+            const arr = dataObj[y] || [];
+            return arr.reduce((a, b) => a + b, 0);
+        });
+    }
+
+    function isPartialYear(y, dataObj) {
+        return (dataObj[y] || []).length < 12;
+    }
+
+    const annualBarOpts = (unit) => ({
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#222222',
+                titleFont: { size: 13 },
+                bodyFont: { size: 12 },
+                padding: 12,
+                cornerRadius: 8,
+                callbacks: {
+                    label: ctx => {
+                        const v = ctx.raw;
+                        const y = visibleYears[ctx.dataIndex];
+                        const suffix = isPartialYear(y, unit === 'pax' ? PAX : ACFT) ? ' (YTD)' : '';
+                        return fmt(v) + suffix;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+            y: {
+                grid: { color: '#eae8e4' },
+                beginAtZero: true,
+                ticks: {
+                    font: { size: 11 },
+                    callback: v => {
+                        if (v >= 1e6) { const m = v / 1e6; return (m % 1 === 0) ? m.toFixed(0) + 'M' : m.toFixed(1) + 'M'; }
+                        if (v >= 1e3) { const k = v / 1e3; return (k % 1 === 0) ? k.toFixed(0) + 'K' : k.toFixed(1) + 'K'; }
+                        return v;
+                    }
+                }
+            }
+        }
+    });
+
+    const paxTotals = annualTotals(PAX);
+    const acftTotals = annualTotals(ACFT);
+
+    const paxBarColors = visibleYears.map(y => isPartialYear(y, PAX) ? YEAR_COLORS[y].line + '99' : YEAR_COLORS[y].line);
+    const acftBarColors = visibleYears.map(y => isPartialYear(y, ACFT) ? YEAR_COLORS[y].line + '99' : YEAR_COLORS[y].line);
+
+    const paxBorderStyles = visibleYears.map(y => isPartialYear(y, PAX) ? [6, 4] : []);
+    const acftBorderStyles = visibleYears.map(y => isPartialYear(y, ACFT) ? [6, 4] : []);
+
+    paxAnnualChart = new Chart(document.getElementById('paxAnnualChart'), {
+        type: 'bar',
+        data: {
+            labels: annualLabels,
+            datasets: [{
+                data: paxTotals,
+                backgroundColor: paxBarColors,
+                borderColor: visibleYears.map(y => YEAR_COLORS[y].line),
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: annualBarOpts('pax')
+    });
+
+    acftAnnualChart = new Chart(document.getElementById('acftAnnualChart'), {
+        type: 'bar',
+        data: {
+            labels: annualLabels,
+            datasets: [{
+                data: acftTotals,
+                backgroundColor: acftBarColors,
+                borderColor: visibleYears.map(y => YEAR_COLORS[y].line),
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: annualBarOpts('acft')
+    });
+}
+
+// ── TABLES ───────────────────────────────────────────
+const tableSortState = {}; // { containerId: { col: index, dir: 'asc'|'desc' } }
+
+function buildTable(containerId, dataObj) {
+    const base = dataObj[2019];
+    const visibleYears = YEARS.filter(y => activeYears.has(y));
+    const latestYear = Math.max(...visibleYears);
+    const prevYear = YEARS.includes(latestYear - 1) ? latestYear - 1 : null;
+
+    // Build row data: array of { monthIdx, cells: [{value (numeric for sort), display (html)}] }
+    const colHeaders = ['Month', ...visibleYears.map(String), 'vs 2019', 'YoY'];
+    const rows = [];
+
+    for (let i = 0; i < 12; i++) {
+        const hasData = visibleYears.some(y => dataObj[y] && dataObj[y][i] != null);
+        if (!hasData && i > 0) continue;
+
+        const monthVals = visibleYears.map(y => (dataObj[y] && dataObj[y][i]) ?? -1);
+        const peakVal = Math.max(...monthVals.filter(v => v > 0));
+        const peakYearIdx = monthVals.lastIndexOf(peakVal);
+
+        const cells = [{ sortVal: i, html: `<td>${MONTHS[i]}</td>` }];
+
+        visibleYears.forEach((y, j) => {
+            const v = dataObj[y] && dataObj[y][i];
+            const isPeak = v != null && v === peakVal && j === peakYearIdx;
+            cells.push({ sortVal: v ?? -Infinity, html: `<td class="num${isPeak ? ' peak' : ''}">${v != null ? fmt(v) : '—'}</td>` });
+        });
+
+        const cur = dataObj[latestYear] && dataObj[latestYear][i];
+        const b = base[i];
+        const prevVal = prevYear && dataObj[prevYear] && dataObj[prevYear][i];
+
+        if (cur != null && b) {
+            const rec = +(cur / b * 100).toFixed(1);
+            const cls = rec >= 100 ? 'above' : 'below';
+            cells.push({ sortVal: rec, html: `<td class="num recovery-cell ${cls}">${rec.toFixed(1)}%</td>` });
+        } else {
+            cells.push({ sortVal: -Infinity, html: '<td class="num">—</td>' });
+        }
+
+        if (cur != null && prevVal) {
+            const yoy = +((cur - prevVal) / prevVal * 100).toFixed(1);
+            const cls = yoy >= 0 ? 'above' : 'below';
+            cells.push({ sortVal: yoy, html: `<td class="num recovery-cell ${cls}">${sign(yoy)}${yoy.toFixed(1)}%</td>` });
+        } else {
+            cells.push({ sortVal: -Infinity, html: '<td class="num">—</td>' });
+        }
+
+        rows.push({ monthIdx: i, cells, isTotal: false });
+    }
+
+    // Totals row (always last, never sorted)
+    const totalCells = [{ sortVal: 99, html: '<td>Total</td>' }];
+    visibleYears.forEach(y => {
+        const arr = dataObj[y] || [];
+        const total = arr.reduce((a, b) => a + b, 0);
+        totalCells.push({ sortVal: total, html: `<td class="num">${fmt(total)}</td>` });
+    });
+    const latestArr = dataObj[latestYear] || [];
+    const baseSlice = base.slice(0, latestArr.length);
+    const latestTotal = latestArr.reduce((a, b) => a + b, 0);
+    const baseTotal = baseSlice.reduce((a, b) => a + b, 0);
+    if (latestTotal && baseTotal) {
+        const rec = +(latestTotal / baseTotal * 100).toFixed(1);
+        const cls = rec >= 100 ? 'above' : 'below';
+        totalCells.push({ sortVal: rec, html: `<td class="num recovery-cell ${cls}">${rec.toFixed(1)}%</td>` });
+    } else {
+        totalCells.push({ sortVal: -Infinity, html: '<td class="num">—</td>' });
+    }
+    if (prevYear) {
+        const prevSlice = (dataObj[prevYear] || []).slice(0, latestArr.length);
+        const prevTotal = prevSlice.reduce((a, b) => a + b, 0);
+        if (latestTotal && prevTotal) {
+            const yoy = +((latestTotal - prevTotal) / prevTotal * 100).toFixed(1);
+            const cls = yoy >= 0 ? 'above' : 'below';
+            totalCells.push({ sortVal: yoy, html: `<td class="num recovery-cell ${cls}">${sign(yoy)}${yoy.toFixed(1)}%</td>` });
+        } else {
+            totalCells.push({ sortVal: -Infinity, html: '<td class="num">—</td>' });
+        }
+    } else {
+        totalCells.push({ sortVal: -Infinity, html: '<td class="num">—</td>' });
+    }
+
+    // Apply sort if one is active
+    const sortState = tableSortState[containerId];
+    if (sortState) {
+        const { col, dir } = sortState;
+        const mult = dir === 'asc' ? 1 : -1;
+        rows.sort((a, b) => {
+            const va = a.cells[col].sortVal;
+            const vb = b.cells[col].sortVal;
+            if (va === vb) return 0;
+            return (va < vb ? -1 : 1) * mult;
+        });
+    }
+
+    // Render
+    const sortArrow = (colIdx) => {
+        if (!sortState || sortState.col !== colIdx) return '<span class="sort-arrow">⇅</span>';
+        return `<span class="sort-arrow">${sortState.dir === 'asc' ? '▲' : '▼'}</span>`;
+    };
+    const sortedClass = (colIdx) => sortState && sortState.col === colIdx ? ' sorted' : '';
+
+    let html = '<thead><tr>';
+    colHeaders.forEach((h, idx) => {
+        const numCls = idx > 0 ? ' class="num' + sortedClass(idx) + '"' : ' class="' + sortedClass(idx).trim() + '"';
+        html += `<th${numCls} data-col="${idx}">${h}${sortArrow(idx)}</th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    rows.forEach(r => {
+        html += '<tr>' + r.cells.map(c => c.html).join('') + '</tr>';
+    });
+    html += '<tr>' + totalCells.map(c => c.html).join('') + '</tr>';
+    html += '</tbody>';
+
+    const table = document.getElementById(containerId);
+    table.innerHTML = html;
+
+    // Attach sort handlers
+    table.querySelectorAll('th').forEach(th => {
+        th.addEventListener('click', () => {
+            const col = +th.dataset.col;
+            const cur = tableSortState[containerId];
+            if (cur && cur.col === col) {
+                if (cur.dir === 'asc') { tableSortState[containerId] = { col, dir: 'desc' }; }
+                else { delete tableSortState[containerId]; } // third click resets
+            } else {
+                tableSortState[containerId] = { col, dir: 'asc' };
+            }
+            buildTable(containerId, dataObj);
+        });
+    });
+}
+
+// ── FILTERS ──────────────────────────────────────────
+document.querySelectorAll('.year-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const y = +btn.dataset.year;
+        if (activeYears.has(y)) {
+            if (activeYears.size > 1) { activeYears.delete(y); btn.classList.remove('active'); }
+        } else {
+            activeYears.add(y); btn.classList.add('active');
+        }
+        refresh();
+    });
+});
+
+function refresh() {
+    buildCharts();
+    buildTable('paxTable', PAX);
+    buildTable('acftTable', ACFT);
+}
+
+// ── INIT ─────────────────────────────────────────────
+document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+renderKPIs();
+refresh();
+</script>
+</body>
+</html>

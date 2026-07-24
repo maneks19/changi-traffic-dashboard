@@ -260,13 +260,13 @@ function renderKPIs() {
     const prevPax = PAX[2025][latestMonthIdx];
     const basePax = PAX[2019][latestMonthIdx];
     const paxYoY = ((curPax - prevPax) / prevPax * 100).toFixed(1);
-    const paxRec = pct(curPax, basePax);
+    const paxRec = ((curPax - basePax) / basePax * 100).toFixed(1);
 
     const curAcft = latest2026Acft[latestMonthIdx];
     const prevAcft = ACFT[2025][latestMonthIdx];
     const baseAcft = ACFT[2019][latestMonthIdx];
     const acftYoY = ((curAcft - prevAcft) / prevAcft * 100).toFixed(1);
-    const acftRec = pct(curAcft, baseAcft);
+    const acftRec = ((curAcft - baseAcft) / baseAcft * 100).toFixed(1);
 
     // YTD totals
     const ytdPax = latest2026Pax.reduce((a,b)=>a+b,0);
@@ -274,13 +274,13 @@ function renderKPIs() {
     const ytdPaxChg = ((ytdPax - ytdPaxPrev) / ytdPaxPrev * 100).toFixed(1);
 
     const ytdPaxBase = PAX[2019].slice(0, latest2026Pax.length).reduce((a,b)=>a+b,0);
-    const ytdPaxRec = pct(ytdPax, ytdPaxBase);
+    const ytdPaxRec = ((ytdPax - ytdPaxBase) / ytdPaxBase * 100).toFixed(1);
 
     const ytdAcft = latest2026Acft.reduce((a,b)=>a+b,0);
     const ytdAcftPrev = ACFT[2025].slice(0, latest2026Acft.length).reduce((a,b)=>a+b,0);
     const ytdAcftChg = ((ytdAcft - ytdAcftPrev) / ytdAcftPrev * 100).toFixed(1);
     const ytdAcftBase = ACFT[2019].slice(0, latest2026Acft.length).reduce((a,b)=>a+b,0);
-    const ytdAcftRec = pct(ytdAcft, ytdAcftBase);
+    const ytdAcftRec = ((ytdAcft - ytdAcftBase) / ytdAcftBase * 100).toFixed(1);
 
     const monthShort = MONTHS[latestMonthIdx].slice(0, 3);
 
@@ -300,7 +300,7 @@ function renderKPIs() {
                 <div class="value">${fmtM(curPax)}</div>
                 <div class="kpi-footer">
                     <div class="change ${paxYoY >= 0 ? 'up':'down'}">${paxYoY >= 0 ? upArrow : downArrow} ${sign(paxYoY)}${paxYoY}%<span class="chg-label">vs ${monthShort} 2025</span></div>
-                    <div class="change ${paxRec >= 100 ? 'up':'down'}">${paxRec >= 100 ? upArrow : downArrow} ${paxRec}%<span class="chg-label">vs ${monthShort} 2019</span></div>
+                    <div class="change ${paxRec >= 0 ? 'up':'down'}">${paxRec >= 0 ? upArrow : downArrow} ${sign(paxRec)}${paxRec}%<span class="chg-label">vs ${monthShort} 2019</span></div>
                 </div>
             </div>
         </div>
@@ -314,7 +314,7 @@ function renderKPIs() {
                 <div class="value">${fmtK(curAcft)}</div>
                 <div class="kpi-footer">
                     <div class="change ${acftYoY >= 0 ? 'up':'down'}">${acftYoY >= 0 ? upArrow : downArrow} ${sign(acftYoY)}${acftYoY}%<span class="chg-label">vs ${monthShort} 2025</span></div>
-                    <div class="change ${acftRec >= 100 ? 'up':'down'}">${acftRec >= 100 ? upArrow : downArrow} ${acftRec}%<span class="chg-label">vs ${monthShort} 2019</span></div>
+                    <div class="change ${acftRec >= 0 ? 'up':'down'}">${acftRec >= 0 ? upArrow : downArrow} ${sign(acftRec)}${acftRec}%<span class="chg-label">vs ${monthShort} 2019</span></div>
                 </div>
             </div>
         </div>
@@ -328,7 +328,7 @@ function renderKPIs() {
                 <div class="value">${fmtM(ytdPax)}</div>
                 <div class="kpi-footer">
                     <div class="change ${ytdPaxChg >= 0 ? 'up':'down'}">${ytdPaxChg >= 0 ? upArrow : downArrow} ${sign(ytdPaxChg)}${ytdPaxChg}%<span class="chg-label">vs YTD 2025</span></div>
-                    <div class="change ${ytdPaxRec >= 100 ? 'up':'down'}">${ytdPaxRec >= 100 ? upArrow : downArrow} ${ytdPaxRec}%<span class="chg-label">vs YTD 2019</span></div>
+                    <div class="change ${ytdPaxRec >= 0 ? 'up':'down'}">${ytdPaxRec >= 0 ? upArrow : downArrow} ${sign(ytdPaxRec)}${ytdPaxRec}%<span class="chg-label">vs YTD 2019</span></div>
                 </div>
             </div>
         </div>
@@ -342,7 +342,7 @@ function renderKPIs() {
                 <div class="value">${fmtK(ytdAcft)}</div>
                 <div class="kpi-footer">
                     <div class="change ${ytdAcftChg >= 0 ? 'up':'down'}">${ytdAcftChg >= 0 ? upArrow : downArrow} ${sign(ytdAcftChg)}${ytdAcftChg}%<span class="chg-label">vs YTD 2025</span></div>
-                    <div class="change ${ytdAcftRec >= 100 ? 'up':'down'}">${ytdAcftRec >= 100 ? upArrow : downArrow} ${ytdAcftRec}%<span class="chg-label">vs YTD 2019</span></div>
+                    <div class="change ${ytdAcftRec >= 0 ? 'up':'down'}">${ytdAcftRec >= 0 ? upArrow : downArrow} ${sign(ytdAcftRec)}${ytdAcftRec}%<span class="chg-label">vs YTD 2019</span></div>
                 </div>
             </div>
         </div>

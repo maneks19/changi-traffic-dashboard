@@ -173,6 +173,17 @@
     limitControl.append(button);
   });
   listToolbar.append(caption,limitControl);document.getElementById('market-list').before(listToolbar);
+  // Decorative tile icons use the same compact badge treatment as Airport traffic.
+  const summaryIcons = [
+    '<circle cx="12" cy="7" r="4" fill="currentColor" stroke="none"/><path d="M12 13c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4Z" fill="currentColor" stroke="none"/>',
+    '<circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M8 6h7a4 4 0 0 1 0 8H9a4 4 0 0 0-4 4h11"/>',
+    '<path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5Z" fill="currentColor" stroke="none"/>',
+    '<path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 0 1 14 0Z"/><path d="M9 10h6"/>',
+    '<path d="M4 19h16M6 15v-4m6 4V7m6 8V3"/><path d="m15 5 3-3 3 3"/>',
+    '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 4h2m4 0h2m-8 4h2"/>',
+    '<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/>',
+    '<path d="M8 3h8v6a4 4 0 0 1-8 0V3Zm0 2H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4m-4 2v5m-4 3h8m-6-3h4v3h-4Z"/>'
+  ];
   let directionAlignment;
   root.addEventListener('marketupdate', ({detail:d}) => {
     directionAlignment?.disconnect();
@@ -194,8 +205,17 @@
       ['Average one-way fare', d.total.pax ? money.format(d.total.cents / 100 / d.total.pax) : '—', 'Passenger-weighted · USD'],
       ['Top ranked market', first?.label || '—', first ? compact(first.stats.pax / divisor)+' annual passengers · '+direction.toLowerCase() : 'No matching data']
     ];
-    cards.forEach(([label,value,note]) => {
-      const card = el('div', undefined, 'kpi'); card.append(el('div',label,'summary-label'),el('div',value,'value'),el('div',note,'summary-detail')); summary.append(card);
+    cards.forEach(([label,value,note],index) => {
+      const card = el('div', undefined, 'kpi');
+      const header = el('div',undefined,'kpi-header');
+      const icon = el('span',undefined,'kpi-icon');
+      icon.setAttribute('aria-hidden','true');
+      icon.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">'+summaryIcons[index]+'</svg>';
+      const title=el('div',undefined,'label'); title.append(el('div',label,'metric-name'));
+      header.append(title,icon);
+      const body=el('div',undefined,'kpi-body');
+      body.append(header,el('div',value,'value'),el('div',note,'summary-detail'));
+      card.append(body); summary.append(card);
     });
     const host = document.getElementById('market-list'); host.replaceChildren();
     const table = el('table'); table.setAttribute('aria-label','Singapore destination demand');

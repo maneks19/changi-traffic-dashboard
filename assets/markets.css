@@ -1,0 +1,483 @@
+.dashboard-tabs { display:flex; gap:26px; border-bottom:1px solid var(--border); margin:-4px 0 24px; }
+.dashboard-tabs button { padding:10px 0 13px; border:0; border-bottom:3px solid transparent; background:none; color:var(--muted); font:600 .88rem/1.5 system-ui; cursor:pointer; }
+.dashboard-tabs button[aria-selected="true"] { border-bottom-color:var(--accent); color:var(--accent); }
+[role="tabpanel"][hidden], #europe-apac-market-heatmap [hidden] { display:none!important; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+.market-intro { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.market-eyebrow { font-size:.68rem; letter-spacing:.09em; font-weight:700; color:var(--accent); }
+.market-intro h2 { font-size:1.4rem; letter-spacing:-.025em; margin:5px 0 2px; }
+.market-intro p, .market-context { color:var(--muted); font-size:.84rem; }
+.market-context { margin:12px 0 24px; max-width:850px; }
+.period-tag { border:1px solid var(--border); border-radius:20px; padding:6px 12px; font-size:.72rem; white-space:nowrap; color:var(--muted); }
+#europe-apac-market-heatmap { --foreground:#222; --background:#fff; --muted:#f1efeb; --muted-foreground:#666; --primary:#EF492F; --viz-series-1:#EF492F; font-family:inherit; color-scheme:light; }
+#europe-apac-market-heatmap .heat-layout { gap:16px; }
+#europe-apac-market-heatmap .text-small { font-size:.78rem; }
+#europe-apac-market-heatmap .text-muted { color:#666; }
+#europe-apac-market-heatmap .sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+#europe-apac-market-heatmap .form-label { display:flex; flex-direction:column; font-size:.72rem; font-weight:600; color:#666; gap:6px; }
+#europe-apac-market-heatmap input:not([type="checkbox"]), #europe-apac-market-heatmap select { width:100%; background:#fff; color:#222; font:400 .83rem/1.4 system-ui; padding:10px 12px; border:1px solid #e0ddd8; border-radius:8px; min-height:40px; margin:0; }
+#europe-apac-market-heatmap input:focus, #europe-apac-market-heatmap select:focus { outline:2px solid #EF492F; outline-offset:1px; }
+#europe-apac-market-heatmap [data-control="search"] { min-height:48px; font-size:.9rem; padding:12px 16px; box-shadow:var(--shadow); }
+#europe-apac-market-heatmap .controls-panel { background:#fff; border:0; box-shadow:var(--shadow); border-radius:12px; padding:20px 24px; display:grid; grid-template-columns:1.4fr 1fr; gap:20px; }
+#europe-apac-market-heatmap .primary-controls { grid-template-columns:1fr 1fr; }
+#europe-apac-market-heatmap .primary-controls label:has([data-control="row-group"]), #europe-apac-market-heatmap .primary-controls label:has([data-control="share-basis"]) { display:none; }
+#europe-apac-market-heatmap .region-controls { grid-template-columns:1fr; }
+#europe-apac-market-heatmap .more-filters { grid-column:1/-1; }
+#europe-apac-market-heatmap .form-check { flex-direction:row; align-items:center; gap:8px; }
+#europe-apac-market-heatmap input[type="checkbox"] { accent-color:#EF492F; width:16px; height:16px; }
+#europe-apac-market-heatmap .market-summary { margin:0; gap:16px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+.market-summary .kpi { border-top:3px solid #EF492F; padding:18px 20px; }
+.market-summary .kpi:nth-child(2) { border-top-color:#D4881C; }
+.market-summary .kpi:nth-child(3) { border-top-color:#2a7d4f; }
+.market-summary .kpi:nth-child(4) { border-top-color:#7c3aed; }
+.market-summary .summary-label { font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700; color:#666; }
+.market-summary .value { font-size:1.8rem; margin:4px 0; }
+.market-summary .summary-detail { font-size:.72rem; color:#666; }
+.market-view-switch { display:flex; gap:4px; align-self:flex-start; background:#eae7e2; padding:4px; border-radius:8px; }
+.market-view-switch button { padding:6px 14px; background:transparent; border:0; border-radius:6px; font:500 .78rem system-ui; color:#666; cursor:pointer; }
+.market-view-switch button[aria-pressed="true"] { background:white; color:#222; box-shadow:var(--shadow); }
+.market-list-scroll { background:white; box-shadow:var(--shadow); border-radius:12px; overflow:auto; max-height:650px; }
+#market-list table { width:100%; border-collapse:separate; border-spacing:0; }
+#market-list th { background:#fff; position:sticky; top:0; z-index:1; padding:14px 18px; }
+#market-list td { padding:12px 18px; height:56px; border-bottom:1px solid #efede9; font-weight:400; }
+#market-list tr:last-child td { background:#f5f4f1; font-weight:600; }
+#market-list tr:not(:last-child):hover td { background-color:#faf9f7; }
+#market-list .destination-name { font-weight:600; font-size:.84rem; }
+#market-list .destination-meta { color:#777; font-size:.7rem; margin-top:2px; }
+#market-list .market-value { font-weight:650; background:linear-gradient(90deg,rgba(47,112,166,.20) var(--bar),rgba(47,112,166,.035) var(--bar)); }
+#market-list .context-row { color:#999; }
+#market-list .context-row .market-value { background:#f5f4f1; color:#999; }
+.service-label { display:inline-flex; align-items:center; gap:7px; font:500 .72rem system-ui; color:#555; background:transparent; border:0; cursor:help; }
+.service-label i { display:inline-block; width:7px; height:7px; border-radius:50%; background:#2a7d4f; }
+.service-label.seasonal i { background:#D4881C; }
+.service-label.unserved i { background:#8f4057; }
+.context-row .service-label i { background:#aaa; }
+#europe-apac-market-heatmap .table-responsive { overflow:auto; background:white; border-radius:12px; box-shadow:var(--shadow); padding:16px; }
+#europe-apac-market-heatmap .heat-grid td, #europe-apac-market-heatmap .heat-grid th { border:0; font-size:.76rem; text-transform:none; letter-spacing:0; }
+#europe-apac-market-heatmap .heat-grid tr:last-child td { font-weight:500; }
+#europe-apac-market-heatmap .heat-grid button { font:inherit; color:inherit; background:none; border:0; padding:7px; border-radius:6px; cursor:pointer; }
+#europe-apac-market-heatmap .heat-grid button[aria-pressed="true"] { background:#EF492F; color:#fff; }
+#europe-apac-market-heatmap .nonstop-legend { order:0; margin:0; font-size:.74rem; gap:8px; }
+#europe-apac-market-heatmap .nonstop-legend > span { margin-left:auto; font-size:.7rem; }
+#europe-apac-market-heatmap .nonstop-legend button[aria-pressed="true"] { background:#fff0ec; color:#b83824; border-color:#f3c8bd; }
+#europe-apac-market-heatmap .heat-key { color:#777; font-size:.7rem; }
+#europe-apac-market-heatmap details:not(.more-filters) { border-top:1px solid #e0ddd8; padding-top:16px; color:#666; }
+#europe-apac-market-heatmap details p { margin:10px 0; line-height:1.65; }
+#europe-apac-market-heatmap a { color:#b83824; }
+.market-tooltip { position:fixed; z-index:100; max-width:340px; padding:12px 16px; background:#252525; color:white; box-shadow:0 4px 14px #0002; border-radius:8px; font-size:.75rem; line-height:1.6; white-space:pre-line; pointer-events:none; }
+@media(max-width:900px) { #europe-apac-market-heatmap .market-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } #europe-apac-market-heatmap .controls-panel { grid-template-columns:1fr; } }
+@media(max-width:600px) { .market-intro { align-items:flex-start; flex-direction:column; gap:10px; } .market-intro h2 { font-size:1.2rem; } .market-summary .kpi { padding:14px; } .market-summary .value { font-size:1.5rem; } #europe-apac-market-heatmap .controls-panel { padding:16px; } #market-list td,#market-list th { padding:10px 12px; } #europe-apac-market-heatmap .nonstop-legend > span { margin:4px 0; width:100%; } }
+
+#europe-apac-market-heatmap .primary-controls, #europe-apac-market-heatmap .region-controls { display:grid; gap:16px; align-items:start; }
+#europe-apac-market-heatmap .extra-controls { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px; }
+#europe-apac-market-heatmap .more-filters summary { font-size:.78rem; cursor:pointer; color:#444; }
+#europe-apac-market-heatmap .filter-summary { margin-left:12px; color:#777; font-size:.73rem; }
+#europe-apac-market-heatmap .nonstop-legend { display:flex; align-items:center; flex-wrap:wrap; }
+#europe-apac-market-heatmap .nonstop-legend button { display:inline-flex; align-items:center; gap:7px; border:1px solid #dedbd6; background:transparent; border-radius:20px; padding:7px 12px; font:500 .76rem system-ui; color:#666; cursor:pointer; }
+#europe-apac-market-heatmap .service-dot { display:inline-block; flex:none; width:7px; height:7px; border-radius:50%; background:#2a7d4f; }
+#europe-apac-market-heatmap .service-dot.is-seasonal { background:#D4881C; }
+#europe-apac-market-heatmap .service-dot.is-unserved { background:#8f4057; }
+#market-list th { color:#666; font-size:.68rem; font-weight:600; cursor:default; }
+#market-list .num { text-align:right; font-variant-numeric:tabular-nums; }
+#market-list td { font-size:.82rem; }
+#market-list .others-row td { background:#f5f4f1; font-weight:600; }
+#market-list tr:last-child:not(.others-row) td { background:initial; font-weight:400; }
+#europe-apac-market-heatmap .list-caption { color:#777; font-size:.74rem; }
+#europe-apac-market-heatmap[data-display="list"] .heat-caption { display:none; }
+#europe-apac-market-heatmap[data-display="heatmap"] .list-caption { display:none; }
+@media(max-width:600px) { #europe-apac-market-heatmap .primary-controls, #europe-apac-market-heatmap .extra-controls { grid-template-columns:1fr; } #market-list table { min-width:680px; } }
+
+#europe-apac-market-heatmap .heat-layout { display:flex; flex-direction:column; gap:16px; }
+#europe-apac-market-heatmap .summary-scope { color:#777; font-size:.72rem; margin:-4px 0 4px; }
+.market-summary .kpi:nth-child(4n+1) { border-top-color:#2f70a6; }
+.market-summary .kpi:nth-child(4n+2) { border-top-color:#68899e; }
+.market-summary .kpi:nth-child(4n+3) { border-top-color:#2a7d4f; }
+.market-summary .kpi:nth-child(4n+4) { border-top-color:#807399; }
+#europe-apac-market-heatmap .service-label.unserved i, #europe-apac-market-heatmap .service-dot.is-unserved { background:#807399; }
+#market-list .market-value { color:#254e70; }
+
+/* Compact destination comparison: consistent rows and slim in-cell bars. */
+#market-list table { table-layout:fixed; min-width:940px; }
+#market-list th { padding:9px 14px; font-size:.66rem; line-height:1.3; vertical-align:middle; }
+#market-list td { padding:7px 14px; height:40px; line-height:1.35; vertical-align:middle; }
+#market-list .column-unit { display:block; font-size:.65rem; font-weight:400; text-transform:none; letter-spacing:0; color:#888; margin-top:2px; }
+#market-list .destination-identity { display:flex; align-items:baseline; gap:9px; min-width:0; }
+#market-list .destination-rank { flex:none; width:19px; font-size:.69rem; color:#999; font-variant-numeric:tabular-nums; }
+#market-list .destination-name { font-size:.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#market-list .destination-meta { font-size:.69rem; margin:0; color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#market-list .market-value { background:transparent; }
+#market-list .value-with-bar { display:flex; align-items:center; gap:14px; }
+#market-list .demand-number { width:70px; flex:none; }
+#market-list .demand-bar-track { height:5px; flex:1; background:#edf2f6; border-radius:4px; overflow:hidden; }
+#market-list .demand-bar-fill { display:block; height:100%; width:var(--bar); background:#719ab9; border-radius:4px; }
+#market-list .others-row .demand-bar-track { visibility:hidden; }
+#market-list .service-label { padding:0; white-space:nowrap; }
+@media(max-width:900px) { #market-list .destination-meta { display:none; } }
+
+#market-list .column-sort { border:0; background:none; padding:0; color:inherit; font:inherit; text-transform:inherit; letter-spacing:inherit; text-align:inherit; cursor:pointer; width:100%; }
+#market-list .column-sort:hover { color:#254e70; }
+#market-list .column-sort:focus-visible { outline:2px solid #719ab9; outline-offset:4px; border-radius:2px; }
+#market-list th[aria-sort="ascending"], #market-list th[aria-sort="descending"] { color:#254e70; }
+#market-list .sort-arrow { margin-left:5px; opacity:.55; }
+#market-list th:not([aria-sort="none"]) .sort-arrow { opacity:1; }
+
+.direction-control > .form-label { display:block; margin-bottom:8px; }
+.direction-toggle { display:flex; padding:3px; border-radius:8px; background:#eae7e2; gap:3px; }
+.direction-toggle button { flex:1; border:0; background:transparent; color:#777; border-radius:6px; padding:9px 10px; font:500 .78rem system-ui; cursor:pointer; }
+.direction-toggle button[aria-pressed="true"] { background:#fff; color:#254e70; box-shadow:0 1px 4px #0001; }
+.direction-toggle button:focus-visible { outline:2px solid #719ab9; }
+#market-list table { min-width:1080px; }
+
+/* Geography and grouping use the same compact pills as service status. */
+#europe-apac-market-heatmap .market-selectors { display:flex; flex-direction:column; gap:10px; }
+#europe-apac-market-heatmap .selector-row { display:flex; align-items:baseline; gap:14px; }
+#europe-apac-market-heatmap .selector-label { width:90px; flex:none; color:#777; font-size:.73rem; font-weight:600; }
+#europe-apac-market-heatmap .selector-choices { display:flex; flex-wrap:wrap; gap:7px; }
+#europe-apac-market-heatmap .selector-choices button { border:1px solid #dedbd6; background:transparent; border-radius:20px; padding:7px 12px; font:500 .76rem system-ui; color:#666; cursor:pointer; }
+#europe-apac-market-heatmap .selector-choices button:hover { border-color:#bbb5ad; background:#f1eeea; }
+#europe-apac-market-heatmap .selector-choices button[aria-pressed="true"] { background:#fff0ec; color:#b83824; border-color:#f3c8bd; }
+#europe-apac-market-heatmap .subregion-row { padding-bottom:4px; }
+#europe-apac-market-heatmap .controls-panel { grid-template-columns:1fr; gap:16px; }
+#europe-apac-market-heatmap .primary-controls { grid-template-columns:minmax(220px,320px); }
+@media(max-width:600px) { #europe-apac-market-heatmap .selector-row { flex-direction:column; gap:6px; } #europe-apac-market-heatmap .selector-label { width:auto; } }
+
+#europe-apac-market-heatmap .service-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px 24px; }
+#europe-apac-market-heatmap .service-toolbar > .selector-row { margin-left:auto; align-items:center; }
+#europe-apac-market-heatmap .service-toolbar .selector-label { width:auto; }
+#europe-apac-market-heatmap .service-snapshot-note { color:#777; font-size:.7rem; margin-top:-8px; }
+#europe-apac-market-heatmap .subregion-row { display:flex; flex-direction:column; align-items:stretch; gap:8px; }
+#europe-apac-market-heatmap .selector-choices button[aria-pressed="mixed"] { color:#b83824; border-color:#f3c8bd; border-style:dashed; background:#fff8f5; }
+#europe-apac-market-heatmap .subregion-row .selector-label { font-size:.68rem; line-height:1.4; }
+@media(max-width:600px) { #europe-apac-market-heatmap .service-toolbar > .selector-row { margin-left:0; flex-direction:row; } }
+
+/* Compact toolbar with a searchable, hierarchical region picker. */
+#europe-apac-market-heatmap .controls-panel { display:flex; flex-direction:column; gap:10px; padding:0; background:transparent; box-shadow:none; border-radius:0; }
+#europe-apac-market-heatmap .primary-controls { display:none; }
+#europe-apac-market-heatmap .compact-filters { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+#europe-apac-market-heatmap .direction-control > .form-label { display:none; }
+#europe-apac-market-heatmap .direction-toggle { min-width:245px; }
+#europe-apac-market-heatmap details.region-picker { position:relative; border:0; padding:0; color:#555; }
+#europe-apac-market-heatmap .region-picker summary, #europe-apac-market-heatmap .more-filters-button { border:1px solid #dedbd6; background:#fff; border-radius:8px; padding:10px 13px; font:500 .78rem system-ui; color:#555; cursor:pointer; }
+#europe-apac-market-heatmap .region-picker summary { list-style:none; }
+#europe-apac-market-heatmap .region-picker summary::-webkit-details-marker { display:none; }
+#europe-apac-market-heatmap .region-picker summary::after { content:'⌄'; margin-left:18px; }
+#europe-apac-market-heatmap .region-popover { position:absolute; z-index:20; top:calc(100% + 8px); left:0; width:330px; max-width:calc(100vw - 36px); padding:12px; border:1px solid #e0ddd8; border-radius:12px; background:#fff; box-shadow:0 8px 28px #0002; }
+#europe-apac-market-heatmap .region-checkboxes { max-height:280px; overflow-y:auto; margin:8px -4px; padding:0 4px; }
+#europe-apac-market-heatmap .region-option { display:flex; align-items:center; gap:9px; padding:7px 5px; font-size:.77rem; font-weight:600; color:#444; cursor:pointer; border-radius:5px; }
+#europe-apac-market-heatmap .region-option:hover { background:#f6f4f1; }
+#europe-apac-market-heatmap .region-option input { flex:none; margin:0; }
+#europe-apac-market-heatmap .child-region { padding-left:25px; font-weight:400; color:#666; }
+#europe-apac-market-heatmap .clear-regions { border:0; background:none; padding:6px 4px; font:500 .75rem system-ui; color:#b83824; cursor:pointer; }
+#europe-apac-market-heatmap .more-filters:not([open]) { display:none; }
+#europe-apac-market-heatmap .more-filters[open] { background:#fff; padding:16px; border-radius:10px; border:1px solid #e0ddd8; }
+#europe-apac-market-heatmap .more-filters .extra-controls { margin-top:0; }
+#europe-apac-market-heatmap .more-filters-button .filter-summary { font-size:0; margin:0; }
+#europe-apac-market-heatmap .more-filters-button .filter-summary:not(:empty)::after { content:' •'; font-size:.8rem; color:#b83824; }
+#europe-apac-market-heatmap .region-chips { display:flex; gap:6px; flex-wrap:wrap; }
+#europe-apac-market-heatmap .region-chips button { padding:5px 10px; border:1px solid #dce4eb; border-radius:16px; background:#edf3f7; color:#365a73; font:500 .72rem system-ui; cursor:pointer; }
+#europe-apac-market-heatmap .region-empty { color:#888; font-size:.76rem; }
+@media(max-width:600px) { #europe-apac-market-heatmap .region-popover { left:auto; right:0; } #europe-apac-market-heatmap .more-filters-button { padding:10px; } }
+
+#europe-apac-market-heatmap .minimum-demand { display:grid; grid-template-columns:auto 88px; column-gap:10px; align-items:center; font-size:.73rem; color:#555; }
+#europe-apac-market-heatmap .minimum-demand > span:first-child { font-weight:600; }
+#europe-apac-market-heatmap .minimum-demand .minimum-help { grid-column:1; font-size:.65rem; color:#888; }
+#europe-apac-market-heatmap .minimum-demand input { grid-column:2; grid-row:1/3; min-height:38px; padding:8px!important; }
+
+#market-list .passenger-header { display:flex; align-items:center; gap:10px; }
+#market-list .passenger-header .column-sort { flex:1; width:auto; }
+#market-list .header-direction-toggle { flex:none; padding:5px 7px; border:1px solid #d7e1e9; border-radius:6px; background:#edf3f7; color:#365a73; font:500 .65rem system-ui; text-transform:none; letter-spacing:0; white-space:nowrap; cursor:pointer; }
+#market-list .header-direction-toggle:hover { background:#dfeaf2; }
+#market-list .header-direction-toggle[aria-checked="true"] { background:#365a73; border-color:#365a73; color:white; }
+
+/* Region pills keep subregions one level away; demand controls stay compact. */
+#europe-apac-market-heatmap .compact-filters {align-items:flex-start;justify-content:space-between;gap:18px 28px}
+#europe-apac-market-heatmap .region-pill-browser {flex:1;min-width:300px}
+#europe-apac-market-heatmap .region-main-pills {align-items:center}
+#europe-apac-market-heatmap .region-family-pill {display:flex;align-items:stretch}
+#europe-apac-market-heatmap .region-family-pill > button:first-child {border-radius:18px 0 0 18px;padding-right:8px}
+#europe-apac-market-heatmap .region-family-pill > button:only-child {border-radius:18px}
+#europe-apac-market-heatmap .region-family-pill > .expand-region {border-radius:0 18px 18px 0;border-left:0;padding:7px 9px;color:#888}
+#europe-apac-market-heatmap .expand-region[aria-expanded=true] {background:#eae7e2;color:#555}
+#europe-apac-market-heatmap .region-sub-pills {margin-top:10px;padding-left:12px;border-left:2px solid #dedbd6;align-items:center}
+#europe-apac-market-heatmap .subregion-heading {font-size:.7rem;color:#777;margin-right:4px}
+#europe-apac-market-heatmap .region-sub-pills button {font-size:.7rem;padding:5px 10px}
+#europe-apac-market-heatmap .minimum-demand-slider {width:260px;flex:none;display:flex;flex-direction:column;gap:4px}
+#europe-apac-market-heatmap .minimum-demand-slider label {font-size:.72rem;font-weight:600;color:#666}
+#europe-apac-market-heatmap .minimum-slider-track {display:flex;gap:12px;align-items:center}
+#europe-apac-market-heatmap .minimum-slider-track input[type=range] {width:160px;min-height:0;padding:0;border:0;box-shadow:none;accent-color:#719ab9;cursor:pointer}
+#europe-apac-market-heatmap .minimum-slider-track input[type=number] {width:88px;min-height:30px;padding:5px 7px;font-size:.74rem}
+#europe-apac-market-heatmap .minimum-demand-slider .minimum-help {font-size:.63rem;color:#888}
+#market-list .passenger-group {padding-bottom:2px;text-align:center;border-bottom:0}
+#market-list .passenger-header {justify-content:center;gap:12px}
+#market-list .header-direction-toggle {padding:4px 8px;border-radius:12px}
+#market-list thead tr:nth-child(2) th {padding-top:2px;padding-bottom:8px}
+#market-list .destination-identity {flex-wrap:wrap;column-gap:7px;row-gap:0}
+#market-list .destination-name {max-width:calc(100% - 30px)}
+#market-list .destination-meta {margin-left:26px;width:100%;font-size:.65rem}
+@media(max-width:900px){#europe-apac-market-heatmap .minimum-demand-slider{width:260px}#market-list .destination-meta{display:none}}
+
+#europe-apac-market-heatmap .minimum-slider-track input[type=range] {appearance:none;background:transparent;height:20px}
+#europe-apac-market-heatmap .minimum-slider-track input[type=range]::-webkit-slider-runnable-track {height:5px;border-radius:4px;background:#dce5eb}
+#europe-apac-market-heatmap .minimum-slider-track input[type=range]::-webkit-slider-thumb {appearance:none;width:14px;height:14px;margin-top:-4.5px;border-radius:50%;background:#719ab9;border:2px solid #fff;box-shadow:0 1px 3px #0002}
+
+/* Each expanded branch owns its children, visually connected beneath its pill. */
+#europe-apac-market-heatmap .region-main-pills {align-items:flex-start;gap:8px}
+#europe-apac-market-heatmap .geography-branch {display:flex;flex-direction:column;align-items:flex-start;max-width:100%}
+#europe-apac-market-heatmap .geography-branch.is-expanded {flex-basis:100%;padding:10px;border:1px solid #e2ddd7;border-radius:16px;background:#faf9f7}
+#europe-apac-market-heatmap .attached-subregions {display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;margin:8px 0 0 16px;padding:0 0 0 14px;border-left:2px solid #e2d8ce}
+#europe-apac-market-heatmap .geography-subbranch {display:flex;flex-direction:column;align-items:flex-start;max-width:100%}
+#europe-apac-market-heatmap .geography-subbranch.is-expanded {flex-basis:100%}
+#europe-apac-market-heatmap .attached-countries {display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px 14px;padding:0 0 0 12px;border-left:2px solid #e2d8ce}
+#europe-apac-market-heatmap .attached-countries button {font-size:.7rem;padding:5px 10px;background:#fff}
+#europe-apac-market-heatmap .hierarchy-chevron {margin-left:9px;color:#999;font-size:.85em}
+#europe-apac-market-heatmap .geography-branch > button[aria-expanded=true] {border-radius:12px}
+
+/* Expanded geography stays in the same wrapping pill flow. */
+#europe-apac-market-heatmap .geography-branch,
+#europe-apac-market-heatmap .geography-branch.is-expanded,
+#europe-apac-market-heatmap .geography-subbranch,
+#europe-apac-market-heatmap .geography-subbranch.is-expanded,
+#europe-apac-market-heatmap .attached-subregions,
+#europe-apac-market-heatmap .attached-countries {
+  display:contents;
+  margin:0;
+  padding:0;
+  border:0;
+  background:none;
+}
+#europe-apac-market-heatmap .geography-branch > button[aria-expanded=true] {border-radius:20px}
+#europe-apac-market-heatmap .attached-subregions .geography-subbranch > button {font-size:.72rem;padding:7px 11px}
+#europe-apac-market-heatmap .attached-countries button {font-size:.7rem;padding:7px 10px;background:transparent}
+
+/* Geography levels retain their own palette in the shared inline flow. */
+#europe-apac-market-heatmap .region-main-pills > .geography-branch > button {background:#fbf1eb;border-color:#e9cdbb;color:#925336}
+#europe-apac-market-heatmap .region-main-pills > .geography-branch > button[aria-pressed=true] {background:#f2d3c1;border-color:#cb9271;color:#713a20}
+#europe-apac-market-heatmap .region-main-pills > .geography-branch > button[aria-pressed=mixed] {background:#fbf1eb;border-color:#cb9271;border-style:dashed;color:#713a20}
+#europe-apac-market-heatmap .attached-subregions > .geography-subbranch > button {background:#edf3f9;border-color:#c9d9e9;color:#3d6486}
+#europe-apac-market-heatmap .attached-subregions > .geography-subbranch > button[aria-pressed=true] {background:#cee0ef;border-color:#8eafcd;color:#284e70}
+#europe-apac-market-heatmap .attached-subregions > .geography-subbranch > button[aria-pressed=mixed] {background:#edf3f9;border-color:#8eafcd;border-style:dashed;color:#284e70}
+#europe-apac-market-heatmap .attached-countries > button {background:#edf6f2;border-color:#c7dfd5;color:#376e5b}
+#europe-apac-market-heatmap .attached-countries > button[aria-pressed=true] {background:#cce5da;border-color:#8bb7a4;color:#245842}
+#europe-apac-market-heatmap .region-main-pills button:hover {filter:brightness(.97)}
+#europe-apac-market-heatmap .region-main-pills .hierarchy-chevron {color:currentColor;opacity:.65}
+
+/* Unboxed branches: each child level sits directly below its parent. */
+#europe-apac-market-heatmap .geography-branch,
+#europe-apac-market-heatmap .geography-branch.is-expanded,
+#europe-apac-market-heatmap .geography-subbranch,
+#europe-apac-market-heatmap .geography-subbranch.is-expanded {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  flex-basis:auto;
+  gap:8px;
+  max-width:100%;
+}
+#europe-apac-market-heatmap .attached-subregions,
+#europe-apac-market-heatmap .attached-countries {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-start;
+  gap:8px;
+  max-width:100%;
+}
+#europe-apac-market-heatmap .attached-countries {max-width:420px;gap:6px}
+
+/* Keep each level's pills in place; expanded children occupy the next row. */
+#europe-apac-market-heatmap .geography-branch,
+#europe-apac-market-heatmap .geography-branch.is-expanded,
+#europe-apac-market-heatmap .geography-subbranch,
+#europe-apac-market-heatmap .geography-subbranch.is-expanded {display:contents}
+#europe-apac-market-heatmap .region-main-pills > button,
+#europe-apac-market-heatmap .geography-branch > button,
+#europe-apac-market-heatmap .geography-subbranch > button {order:0}
+#europe-apac-market-heatmap .attached-subregions,
+#europe-apac-market-heatmap .attached-countries {
+  order:1;
+  flex:0 0 100%;
+  max-width:100%;
+  margin:2px 0 0;
+}
+
+/* Region pills stay compact; geographic detail lives in a multiselect. */
+#europe-apac-market-heatmap .region-refinements {display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+#europe-apac-market-heatmap .region-refinements:empty {display:none}
+#europe-apac-market-heatmap .region-refinement {position:relative}
+#europe-apac-market-heatmap .region-refinement > summary {display:flex;align-items:center;justify-content:space-between;gap:18px;list-style:none;padding:8px 12px;background:#fff;border:1px solid #d8dfe5;border-radius:8px;color:#365a73;font-size:.73rem;font-weight:500;cursor:pointer}
+#europe-apac-market-heatmap .region-refinement > summary::-webkit-details-marker {display:none}
+#europe-apac-market-heatmap .region-refinement[open] > summary {border-color:#719ab9;box-shadow:0 0 0 2px #719ab91a}
+#europe-apac-market-heatmap .geography-menu {
+  position:absolute;top:calc(100% + 8px);left:0;z-index:30;
+  width:288px;max-width:calc(100vw - 48px);max-height:360px;overflow-y:auto;
+  padding:6px;background:var(--surface,#fff);border:1px solid #e5e1dc;
+  border-radius:12px;box-shadow:0 3px 8px #302a2410,0 12px 28px #302a2412;
+  scrollbar-width:thin;scrollbar-color:#d8d3cd transparent;
+}
+#europe-apac-market-heatmap .geography-menu-help {
+  font-size:.59rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+  color:#97918b;padding:10px 10px 8px;
+}
+#europe-apac-market-heatmap .geography-check {
+  display:flex;align-items:center;gap:10px;padding:8px 10px;min-height:34px;
+  font-size:.73rem;color:#44403c;cursor:pointer;font-weight:500;margin:0;border-radius:6px;
+}
+#europe-apac-market-heatmap .geography-check:hover {background:#f7f5f2}
+#europe-apac-market-heatmap .geography-check input {
+  appearance:none;width:14px;height:14px;min-height:0;flex:none;margin:0;padding:0!important;
+  border:1px solid #cfc9c2;border-radius:4px;background:#fff;position:relative;box-shadow:none;cursor:pointer;
+}
+#europe-apac-market-heatmap .geography-check input:checked,
+#europe-apac-market-heatmap .geography-check input:indeterminate {background:#be6b4e;border-color:#be6b4e}
+#europe-apac-market-heatmap .geography-check input:checked::after {
+  content:'';position:absolute;left:4px;top:1px;width:4px;height:7px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);
+}
+#europe-apac-market-heatmap .geography-check input:indeterminate::after {content:'';position:absolute;left:3px;top:5px;width:6px;height:2px;background:#fff;transform:none;border:0}
+#europe-apac-market-heatmap .geography-check input:focus-visible {outline:2px solid #d9957b;outline-offset:3px}
+#europe-apac-market-heatmap .geography-menu > .geography-check {margin-bottom:5px;font-weight:600}
+#europe-apac-market-heatmap .geography-menu-section {border-top:1px solid #f0ede9;padding:2px 0}
+#europe-apac-market-heatmap .geography-menu-subregion {display:flex;align-items:center;border-radius:6px}
+#europe-apac-market-heatmap .geography-menu-subregion:hover {background:#f7f5f2}
+#europe-apac-market-heatmap .geography-menu-subregion > label {flex:1}
+#europe-apac-market-heatmap .geography-menu .country-disclosure {
+  display:flex;align-items:center;justify-content:center;width:28px;height:28px;min-height:0;
+  padding:0;margin-right:4px;border:0;border-radius:5px;background:transparent;color:#8a837c;filter:none;
+}
+#europe-apac-market-heatmap .geography-menu .country-disclosure::after {content:'';width:5px;height:5px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);margin-top:-3px}
+#europe-apac-market-heatmap .geography-menu .country-disclosure[aria-expanded=true]::after {transform:rotate(225deg);margin-top:3px}
+#europe-apac-market-heatmap .geography-menu .country-disclosure:hover {background:#eeeae5;border:0;color:#4b4641}
+#europe-apac-market-heatmap .geography-menu-countries {padding-left:8px;margin:1px 8px 7px 16px;border-left:1px solid #e7e2dc}
+#europe-apac-market-heatmap .geography-menu-countries .geography-check {font-weight:400;color:#746e67;font-size:.7rem;padding:6px 8px;min-height:30px}
+
+/* The selected region pill is also its multiselect trigger. */
+#europe-apac-market-heatmap .region-main-pills .region-refinement {margin:0;padding:0;border:0;border-radius:0;background:transparent;flex:none;overflow:visible}
+#europe-apac-market-heatmap .region-refinement > summary {padding:7px 12px;gap:6px;border-radius:20px;background:#f2d3c1;border:1px solid #cb9271;color:#713a20;font-size:.72rem;font-weight:600}
+#europe-apac-market-heatmap .region-refinement[open] > summary {border-color:#b47b5b;box-shadow:none}
+
+/* Clear a selected region directly, independently of opening its menu. */
+#europe-apac-market-heatmap .region-selected-pill {display:inline-flex;align-items:stretch;border:1px solid #cb9271;background:#f2d3c1;border-radius:20px;flex:none}
+#europe-apac-market-heatmap .region-selected-pill .region-refinement > summary {border:0;background:transparent;border-radius:20px 0 0 20px;padding-right:8px}
+#europe-apac-market-heatmap .region-selected-pill .remove-region {display:flex;align-items:center;justify-content:center;padding:0;width:27px;min-height:0;border:0;border-left:1px solid #cb927155;border-radius:0 20px 20px 0;background:transparent;color:#865035;font:400 1rem system-ui;filter:none}
+#europe-apac-market-heatmap .region-selected-pill .remove-region:hover {background:#e9bda4;color:#66331d}
+
+/* Use a drawn chevron so its size does not depend on the font glyph. */
+#europe-apac-market-heatmap .region-selected-pill .hierarchy-chevron {display:inline-block;width:7px;height:7px;margin:0 5px 3px 7px;font-size:0;border:solid currentColor;border-width:0 1.7px 1.7px 0;transform:rotate(45deg);opacity:.85}
+#europe-apac-market-heatmap .region-selected-pill .region-refinement[open] .hierarchy-chevron {transform:rotate(225deg);margin-top:4px;margin-bottom:0}
+
+/* Shared type and color scale for O&D controls, notes, and data. */
+#markets-panel {
+  --od-text:#292725;
+  --od-muted:#706b65;
+  --od-subtle:#8a847e;
+  --od-border:#e0ddd8;
+  --od-selected-bg:#fff0ec;
+  --od-selected-border:#efc5b9;
+  --od-selected-text:#a74731;
+  --od-control-size:.76rem;
+  --od-note-size:.72rem;
+  --od-label-size:.66rem;
+}
+#markets-panel button, #markets-panel input, #markets-panel select, #markets-panel summary {font-family:inherit}
+#europe-apac-market-heatmap .region-main-pills > button,
+#europe-apac-market-heatmap .region-main-pills > .geography-branch > button,
+#europe-apac-market-heatmap .nonstop-legend button,
+#europe-apac-market-heatmap .selector-row .selector-choices button,
+#europe-apac-market-heatmap .region-selected-pill .region-refinement > summary {
+  font-size:var(--od-control-size);font-weight:500;line-height:1.4;letter-spacing:0;
+  min-height:32px;padding:7px 12px;color:var(--od-muted);
+}
+#europe-apac-market-heatmap .region-main-pills > button,
+#europe-apac-market-heatmap .region-main-pills > .geography-branch > button,
+#europe-apac-market-heatmap .nonstop-legend button,
+#europe-apac-market-heatmap .selector-row .selector-choices button {border:1px solid var(--od-border);background:transparent;border-radius:20px}
+#europe-apac-market-heatmap .region-main-pills > button[aria-pressed=true],
+#europe-apac-market-heatmap .nonstop-legend button[aria-pressed=true],
+#europe-apac-market-heatmap .selector-row .selector-choices button[aria-pressed=true],
+#europe-apac-market-heatmap .region-selected-pill {background:var(--od-selected-bg);border-color:var(--od-selected-border);color:var(--od-selected-text)}
+#europe-apac-market-heatmap .region-selected-pill .region-refinement > summary {min-height:30px;color:var(--od-selected-text);padding-right:8px;background:transparent}
+#europe-apac-market-heatmap .region-selected-pill .remove-region {color:var(--od-selected-text);border-left-color:var(--od-selected-border)}
+#europe-apac-market-heatmap .region-selected-pill .remove-region:hover {background:#f9ded4}
+#europe-apac-market-heatmap .region-main-pills > .geography-branch > button:hover,
+#europe-apac-market-heatmap .nonstop-legend button:hover,
+#europe-apac-market-heatmap .selector-row .selector-choices button:hover {background:#f0ede8;border-color:#cbc5bd;filter:none}
+#europe-apac-market-heatmap .selector-label {font-size:var(--od-control-size);font-weight:500;color:var(--od-muted)}
+#europe-apac-market-heatmap .geography-check {font-size:var(--od-control-size);line-height:1.4;color:var(--od-text)}
+#europe-apac-market-heatmap .geography-menu-countries .geography-check {font-size:var(--od-note-size);color:var(--od-muted)}
+#europe-apac-market-heatmap .geography-menu-help {font-size:var(--od-label-size);letter-spacing:.06em;color:var(--od-subtle)}
+#europe-apac-market-heatmap .geography-check input:checked,
+#europe-apac-market-heatmap .geography-check input:indeterminate {background:var(--od-selected-text);border-color:var(--od-selected-text)}
+#europe-apac-market-heatmap .summary-scope,
+#europe-apac-market-heatmap .list-caption,
+#europe-apac-market-heatmap .service-snapshot-note,
+#europe-apac-market-heatmap .search-summary,
+#europe-apac-market-heatmap .summary-detail {font-size:var(--od-note-size);line-height:1.5;color:var(--od-muted)}
+#europe-apac-market-heatmap .summary-label,
+#market-list th {font-size:var(--od-label-size);font-weight:600;letter-spacing:.045em;line-height:1.4;color:var(--od-muted)}
+#market-list td, #market-list .destination-name {font-size:.8rem;color:var(--od-text)}
+#market-list .destination-meta, #market-list .column-unit {font-size:var(--od-note-size);line-height:1.4;color:var(--od-subtle)}
+#market-list .service-label {font-size:var(--od-control-size);font-weight:500;color:var(--od-muted)}
+#market-list .market-value, #market-list th[aria-sort="ascending"], #market-list th[aria-sort="descending"] {color:#254e70}
+#market-list .demand-number {font-variant-numeric:tabular-nums;font-weight:600}
+#market-list .header-direction-toggle {font-size:var(--od-label-size);line-height:1.4;font-weight:500}
+
+/* All main headings share a baseline; passenger controls sit beneath their title. */
+#market-list thead {position:sticky;top:0;z-index:2;background:#fff}
+#market-list thead th {position:static;vertical-align:top}
+#market-list thead tr:first-child th {padding:12px 14px 8px}
+#market-list thead tr:first-child th[rowspan] {border-bottom:2px solid var(--od-border)}
+#market-list .passenger-group {text-align:left;border-bottom:0}
+#market-list .passenger-header {display:flex;flex-direction:column;align-items:flex-start;gap:5px;color:var(--od-muted)}
+#market-list thead tr:nth-child(2) th {padding:0 14px 10px;text-align:right}
+/* Passenger emphasis follows the selected annual/daily sort. */
+#market-list .passenger-title {padding:0;border:0;background:none;color:inherit;font:inherit;text-transform:inherit;letter-spacing:inherit;cursor:pointer;text-align:left}
+#market-list .passenger-title:hover {color:#254e70}
+#market-list .market-value {color:var(--od-text);font-weight:400}
+#market-list .demand-number {font-weight:inherit}
+#market-list td.passenger-emphasis {color:#254e70;font-weight:600}
+
+/* Compact table navigation and explicit passenger direction. */
+#market-list thead tr:first-child th {padding:10px 14px 4px}
+#market-list thead tr:nth-child(2) th {padding:0 14px 8px}
+#market-list .passenger-header {gap:3px}
+#market-list .passenger-direction {display:inline-flex;gap:2px;padding:2px;border-radius:6px;background:#f0ede9;text-transform:none;letter-spacing:0}
+#market-list .passenger-direction button {border:0;border-radius:4px;background:transparent;padding:3px 7px;color:var(--od-muted);font-family:inherit;font-size:var(--od-label-size);font-weight:500;line-height:1.25;cursor:pointer;white-space:nowrap}
+#market-list .passenger-direction button[aria-pressed=true] {background:white;color:#254e70;box-shadow:0 1px 3px #29272515}
+#market-list .passenger-direction button:hover {color:#254e70}
+#europe-apac-market-heatmap .list-toolbar {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0}
+#europe-apac-market-heatmap .list-toolbar .list-caption {margin:0}
+#europe-apac-market-heatmap .row-limit-control {display:flex;align-items:center;gap:4px}
+#europe-apac-market-heatmap .row-limit-control .selector-label {width:auto;min-width:0;margin-right:5px;font-size:var(--od-note-size)}
+#europe-apac-market-heatmap .row-limit-control button {border:1px solid transparent;border-radius:6px;background:transparent;color:var(--od-muted);padding:4px 8px;font-size:var(--od-note-size);font-weight:500;cursor:pointer}
+#europe-apac-market-heatmap .row-limit-control button[aria-pressed=true] {background:#fff;border-color:var(--od-border);color:#254e70}
+#europe-apac-market-heatmap .row-limit-control button:hover {background:#fff}
+
+/* One baseline for every heading, with direction controls above Passengers. */
+#market-list thead tr:first-child th {padding:9px 14px 5px;border-bottom:0}
+#market-list thead tr:first-child td {padding:0;height:auto;border:0;background:#fff}
+#market-list thead tr:nth-child(2) th {padding:0 14px 11px;text-align:left;vertical-align:bottom}
+#market-list thead tr:nth-child(2) th.num {text-align:right}
+#market-list .passenger-header {flex-direction:row;align-items:baseline;justify-content:space-between;gap:12px}
+#market-list .passenger-header .column-sort {flex:none;width:auto}
+#market-list .passenger-title {color:var(--od-muted)}
+#market-list .service-column, #market-list thead tr:nth-child(2) th.service-column {text-align:center}
+#market-list .service-label {justify-content:center;width:28px;height:26px;padding:0;border-radius:5px}
+#market-list .service-label:hover {background:#f0ede9}
+#market-list .service-label i {width:8px;height:8px}
+#europe-apac-market-heatmap .service-label.seasonal i, #europe-apac-market-heatmap .service-dot.is-seasonal {background:#b69a35}
+#europe-apac-market-heatmap .service-label.unserved i, #europe-apac-market-heatmap .service-dot.is-unserved {background:#8f4057}
+#europe-apac-market-heatmap .table-service-legend {display:flex;align-items:center;justify-content:flex-end;gap:18px;flex-wrap:wrap;font-size:var(--od-note-size);color:var(--od-muted);margin-top:-4px}
+#europe-apac-market-heatmap .table-service-legend .legend-title {font-weight:500}
+#europe-apac-market-heatmap .legend-entry {display:inline-flex;align-items:center;gap:6px}
+#europe-apac-market-heatmap .legend-entry i {width:8px;height:8px;display:inline-block;border-radius:50%;background:#2a7d4f}
+#europe-apac-market-heatmap .legend-entry.seasonal i {background:#b69a35}
+#europe-apac-market-heatmap .legend-entry.unserved i {background:#8f4057}
+
+/* Subtle direction choices centered between the Annual and Daily labels. */
+#market-list thead tr:first-child th {padding:39px 14px 12px;border-bottom:2px solid var(--od-border);vertical-align:baseline}
+#market-list thead th.direction-anchor {position:relative}
+#market-list .direction-anchor > .passenger-direction {position:absolute;top:9px;right:auto;transform:translateX(-50%);z-index:3;width:max-content}
+
+#market-list [data-sort="daily"] {width:auto}
+#market-list .passenger-direction {gap:0;padding:1px;background:#f6f5f3;border-radius:5px}
+#market-list .passenger-direction button {padding:3px 7px;font-size:.62rem;font-weight:400;color:#827c76}
+#market-list .passenger-direction button[aria-pressed=true] {background:#eceae6;color:#57524d;box-shadow:none;font-weight:500}
+#market-list .passenger-direction button:focus-visible {outline:2px solid #719ab9;outline-offset:2px}
